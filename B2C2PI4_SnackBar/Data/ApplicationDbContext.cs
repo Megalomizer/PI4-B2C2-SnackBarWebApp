@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace B2C2PI4_SnackBar.Data
+namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {

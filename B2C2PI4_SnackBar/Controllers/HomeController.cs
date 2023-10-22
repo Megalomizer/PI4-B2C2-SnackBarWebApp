@@ -1,19 +1,23 @@
-﻿using B2C2PI4_SnackBar.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SnackbarB2C2PI4_LeviFunk_ClassLibrary;
+using SnackbarB2C2PI4_LeviFunk_MVC.Data;
+using SnackbarB2C2PI4_LeviFunk_MVC.Models;
 using System.Diagnostics;
 
-namespace B2C2PI4_SnackBar.Controllers
+namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ApiService apiService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ApiService _apiService)
         {
             _logger = logger;
+            apiService = _apiService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
