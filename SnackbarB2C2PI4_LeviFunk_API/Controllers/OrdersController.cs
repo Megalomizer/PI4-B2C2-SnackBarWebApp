@@ -41,12 +41,12 @@ namespace SnackbarB2C2PI4_LeviFunk_API
 
         // GET: api/Orders/5
         /// <summary>
-        /// Get a specific order
+        /// Get a specific order based on orderid
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Order</returns>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrder(int id)
+        [HttpGet("SpecificOrder/{id}")]
+        public async Task<ActionResult<Order>> GetOrderByOrderId(int id)
         {
             Order order = await _context.Orders.Where(o => o.Id == id).FirstAsync();
 
@@ -56,6 +56,44 @@ namespace SnackbarB2C2PI4_LeviFunk_API
             }
 
             return order;
+        }
+
+        // GET: api/Orders/5
+        /// <summary>
+        /// Get a specific order based on customer id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Order</returns>
+        [HttpGet("CustomerOrders/{id}")]
+        public async Task<ActionResult<List<Order>>> GetOrdersByCustomerId(int id)
+        { 
+            List<Order> orders = await _context.Orders.Where(o => o.CustomerId == id).ToListAsync();
+
+            if (orders == null)
+            {
+                return NotFound();
+            }
+
+            // Get for each order the list of products (its ugly but it works... for now)
+            foreach (Order order in orders)
+            {
+                order.Customer = null;
+                order.Transaction = null;
+                order.Products = null;
+
+                List<OrderProduct> op = await _context.OrderProducts.Where(o => o.OrderId == order.Id).ToListAsync();
+                foreach(OrderProduct opProduct in op)
+                {
+                    for(int i = 0; i < opProduct.Amount;  i++)
+                    {
+                        Product product = await _context.Products.Where(a => a.Id == opProduct.ProductId).FirstAsync();
+                        product.Orders = null;
+                        order.Products.Add(product);
+                    }
+                }
+            }
+
+            return orders;
         }
 
         // PUT: api/Orders/5
@@ -106,14 +144,10 @@ namespace SnackbarB2C2PI4_LeviFunk_API
         [HttpPost]
         public async Task<ActionResult<Order>> PostOrder(Order order)
         {
-            if (_context.Orders == null)
-            {
-                return Problem("Entity set 'SystemDbContext.Orders'  is null.");
-            }
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetOrder", new { id = order.Id }, order);
+            return CreatedAtAction("GetOrderByOrderId", new { id = order.Id }, order);
         }
 
         // DELETE: api/Orders/5

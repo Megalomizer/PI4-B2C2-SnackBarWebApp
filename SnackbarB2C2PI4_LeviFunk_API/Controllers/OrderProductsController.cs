@@ -26,7 +26,7 @@ namespace SnackbarB2C2PI4_LeviFunk_API
         /// Get a list of all products for an order
         /// </summary>
         /// <returns>order.products --> List(OrderProducts)</returns>
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<OrderProduct>>> GetOrderProducts(int id)
         {
             List<OrderProduct> orderProducts = await _context.OrderProducts.Where(o => o.OrderId == id).ToListAsync();
@@ -79,7 +79,7 @@ namespace SnackbarB2C2PI4_LeviFunk_API
         // PUT: api/OrderProducts/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         /// <summary>
-        /// Update an Orderproduct
+        /// Update a list of Orderproducts
         /// </summary>
         /// <param name="id"></param>
         /// <param name="orderProducts"></param>
@@ -118,8 +118,34 @@ namespace SnackbarB2C2PI4_LeviFunk_API
 
             _context.OrderProducts.Add(orderProduct);
             await _context.SaveChangesAsync();
+            List<OrderProduct> orderProducts = new List<OrderProduct>();
 
-            return CreatedAtAction("GetOrderProduct", new { id = orderProduct.OrderId }, orderProduct);
+            return CreatedAtAction("GetOrderProducts", new { id = orderProduct.OrderId }, orderProducts);
+        }
+
+        // POST: api/OrderProducts
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Create new Orderproducts in the database
+        /// </summary>
+        /// <param name="orderProduct"></param>
+        /// <returns></returns>
+        [HttpPost("AllOrderProducts")]
+        public async Task<ActionResult<OrderProduct>> PostOrderProducts(List<OrderProduct> orderProduct)
+        {
+            if (_context.OrderProducts == null)
+            {
+                return Problem("Entity set 'SystemDbContext.OrderProducts'  is null.");
+            }
+            foreach(OrderProduct op in orderProduct)
+            {
+                _context.OrderProducts.Add(op);
+                await _context.SaveChangesAsync();
+            }
+            
+            List<OrderProduct> orderProducts = new List<OrderProduct>();
+
+            return CreatedAtAction("GetOrderProducts", new { id = orderProduct.FirstOrDefault().OrderId }, orderProducts);
         }
 
         // DELETE: api/OrderProducts/5

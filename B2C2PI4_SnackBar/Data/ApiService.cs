@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using SnackbarB2C2PI4_LeviFunk_ClassLibrary;
 using System.Linq;
@@ -230,17 +231,35 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
         /// Create a new Order
         /// </summary>
         /// <param name="order"></param>
-        public async Task<HttpResponseMessage> CreateOrder(Order order)
+        public async Task<Order> CreateOrder(Order order)
         {
+            // Create new order to be uploaded
+            Order dbOrder = new Order()
+            {
+                Id = order.Id,
+                Cost = order.Cost,
+                DateOfOrder = order.DateOfOrder,
+                Status = "To be Ordered",
+                IsFavorited = false,
+                CustomerId = order.CustomerId,
+                TransactionId = order.TransactionId,
+            };
+
             // Convert Object to Json
-            var jsonObject = JsonConvert.SerializeObject(order);
+            var jsonObject = JsonConvert.SerializeObject(dbOrder);
             
             // Create an Content-object with the Json data
             HttpContent content = new StringContent(jsonObject, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _client.PostAsync("api/Orders", content);
 
-            return response;
+            if (response.IsSuccessStatusCode)
+            {
+                var JsonResponseResult = response.Content.ReadAsStringAsync().Result;
+                order = JsonConvert.DeserializeObject<Order>(JsonResponseResult);
+            }
+
+            return order;
         }
 
         /// <summary>
@@ -334,7 +353,7 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
         /// <param name="orderproduct"></param>
         public async Task<HttpResponseMessage> CreateOrderProduct(OrderProduct orderproduct)
         {
-            var orderproductJson = orderproduct.ToJson();
+            var orderproductJson = JsonConvert.SerializeObject(orderproduct);
             HttpContent content = new StringContent(orderproductJson, Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _client.PostAsync("api/OrderProducts/", content);
@@ -350,9 +369,9 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
         /// <returns></returns>
         public async Task<HttpResponseMessage> CreateOrderProducts(List<OrderProduct> orderproducts)
         {
-            var orderproductsJson = orderproducts.ToJson();
+            var orderproductsJson = JsonConvert.SerializeObject(orderproducts);
             HttpContent content = new StringContent(orderproductsJson, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await _client.PostAsync("api/OrderProducts/", content);
+            HttpResponseMessage response = await _client.PostAsync("api/OrderProducts/AllOrderProducts", content);
             return response;
         }
 
@@ -402,7 +421,7 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
             List<OrderProduct> orderProducts = null;
             if(response.IsSuccessStatusCode)
             {
-                HttpResponseMessage getResponse = await _client.GetAsync("api/OrderProducts/" + orderProducts.First().OrderId.ToString());
+                HttpResponseMessage getResponse = await _client.GetAsync("api/OrderProducts/" + orderproducts.First().OrderId.ToString());
                 if(getResponse.IsSuccessStatusCode)
                 {
                     var JsonResponseResult = getResponse.Content.ReadAsStringAsync().Result;

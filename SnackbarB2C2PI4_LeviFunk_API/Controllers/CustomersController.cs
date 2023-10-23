@@ -41,7 +41,7 @@ namespace SnackbarB2C2PI4_LeviFunk_API
 
         // GET: api/Customers/5
         /// <summary>
-        /// Get a specific customer
+        /// Get a specific customer based on customerid
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -49,6 +49,25 @@ namespace SnackbarB2C2PI4_LeviFunk_API
         public async Task<ActionResult<Customer>> GetCustomer(int id)
         {
             Customer customer = await _context.Customers.Where(c => c.Id == id).FirstAsync();
+
+            if (customer == null)
+            {
+                return NotFound();
+            }
+
+            return customer;
+        }
+
+        // GET: api/Customers/5
+        /// <summary>
+        /// Get a specific customer based on authenticationid
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("Authentication/{id}")]
+        public async Task<ActionResult<Customer>> GetCustomer(string id)
+        {
+            Customer customer = await _context.Customers.Where(c => c.AuthenticationId == id).FirstAsync();
 
             if (customer == null)
             {

@@ -12,6 +12,7 @@
     <div class="CompleteTransactionElement">
         <!--A list of data-->
         <form asp-controller="Orders" asp-action="SaveTransaction" asp-route-id="@Model.Order.Id">
+
             <input type="hidden" asp-for="Transaction.Id" value="@Model.Transaction.Id" />
             <input type="hidden" asp-for="Transaction.OrderId" value="@Model.Transaction.OrderId" />
 

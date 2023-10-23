@@ -106,10 +106,14 @@ namespace SnackbarB2C2PI4_LeviFunk_API
         [HttpPost]
         public async Task<ActionResult<Transaction>> PostTransaction(Transaction transaction)
         {
-          if (_context.Transactions == null)
-          {
-              return Problem("Entity set 'SystemDbContext.Transactions'  is null.");
-          }
+            if (_context.Transactions == null)
+            {
+                return Problem("Entity set 'SystemDbContext.Transactions'  is null.");
+            }
+
+            if(transaction.Order != null)
+                transaction.Order = null;
+
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync();
 

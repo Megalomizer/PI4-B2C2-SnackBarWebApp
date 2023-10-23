@@ -236,7 +236,8 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
         {
             //Re-set the list of items to the order and the customer... since it removed it here
             order.Products = NewOrderProductList;
-            order.Customer = await _apiService.GetCustomer((int)order.CustomerId);
+            if(order.CustomerId != null)
+                order.Customer = await _apiService.GetCustomer((int)order.CustomerId);
 
             // Get the total discount
             int? discount = 0;
@@ -267,7 +268,7 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
             return View(createTransaction);
         }
 
-        public async Task<IActionResult> SaveTransaction(int? id, [Bind("Id, Cost, Discount, DateOfTransaction, Customer, Order")] Transaction transaction)
+        public async Task<IActionResult> SaveTransaction(int? id, [Bind("Id, Cost, Discount, DateOfTransaction, CustomerId, OrderId")] Transaction transaction)
         {
             if (id == null)
                 return NotFound();
@@ -310,7 +311,8 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
             if (product == null)
                 return NotFound();
 
-            NewOrderProductList.Remove(product);
+            Product productListItem = NewOrderProductList.Find(p => p.Id == product.Id);
+            NewOrderProductList.Remove(productListItem);
             
             return RedirectToAction("Create");
         }
@@ -385,10 +387,40 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
                 order.Customer = customer;
                 order.CustomerId = customer.Id;
             }
+            
+            // create order
+            Order newOrder = await _apiService.CreateOrder(order);
 
-            await _apiService.CreateOrder(order);
+            // create orderproducts
+            Dictionary<int, int> ProductAmounts = new Dictionary<int, int>();
+            foreach (Product product in NewOrderProductList)
+            {
+                if (!ProductAmounts.ContainsKey(product.Id))
+                {
+                    ProductAmounts[product.Id] = 1;
+                }
+                else
+                {
+                    ProductAmounts[product.Id] += 1;
+                }
+            }
 
-            return RedirectToAction("OrderToTransaction", order);
+            List<OrderProduct> ListOrderProducts = new List<OrderProduct>();
+            foreach (KeyValuePair<int, int> kvp in ProductAmounts)
+            {
+                OrderProduct product = new OrderProduct()
+                {
+                    OrderId = newOrder.Id,
+                    ProductId = kvp.Key,
+                    Amount = kvp.Value,
+                };
+                ListOrderProducts.Add(product);
+            }
+            
+            await _apiService.CreateOrderProducts(ListOrderProducts);
+            
+
+            return RedirectToAction("OrderToTransaction", newOrder);
         }
 
         /// <summary>
@@ -420,7 +452,36 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Controllers
                 CustomerId = order.CustomerId,
             };
 
-            await _apiService.UpdateOrder(orderEdited, id);
+            // Update the order
+            Order newOrder = await _apiService.UpdateOrder(orderEdited, id);
+
+            // Update the Orderproducts
+            Dictionary<int, int> ProductAmounts = new Dictionary<int, int>();
+            foreach (Product product in NewOrderProductList)
+            {
+                if (!ProductAmounts.ContainsKey(product.Id))
+                {
+                    ProductAmounts[product.Id] = 1;
+                }
+                else
+                {
+                    ProductAmounts[product.Id] += 1;
+                }
+            }
+
+            List<OrderProduct> ListOrderProducts = new List<OrderProduct>();
+            foreach (KeyValuePair<int, int> kvp in ProductAmounts)
+            {
+                OrderProduct product = new OrderProduct()
+                {
+                    OrderId = newOrder.Id,
+                    ProductId = kvp.Key,
+                    Amount = kvp.Value,
+                };
+                ListOrderProducts.Add(product);
+            }
+
+            await _apiService.UpdateOrderProducts(ListOrderProducts);
 
             return RedirectToAction("Index");
         }

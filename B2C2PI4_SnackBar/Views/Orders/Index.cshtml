@@ -21,7 +21,7 @@
         <h4>Favorited Orders</h4>
         <div class="favOrdersWrapper">
 
-            @if(Model.FavoritedOrders != null || Model.FavoritedOrders.Count <= 0)
+            @if(Model.FavoritedOrders != null || Model.FavoritedOrders.Count > 0)
             {
                 @foreach (Order order in Model.FavoritedOrders)
                 {
@@ -61,7 +61,7 @@
         <h4>All Orders</h4>
         <div class="favOrdersWrapper">
 
-            @if (Model.ListOrders != null || Model.FavoritedOrders.Count <= 0)
+            @if (Model.ListOrders != null || Model.FavoritedOrders.Count > 0)
             {
                 @foreach(Order order in Model.ListOrders)
                 {

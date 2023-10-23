@@ -18,11 +18,10 @@ namespace SnackbarB2C2PI4_LeviFunk_ClassLibrary
 
         // Relational Properties
         public Customer? Customer { get; set; }
-        [Required]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
         public Order? Order { get; set; }
         [Required]
-        public int OrderId { get; set; }
+        public int? OrderId { get; set; }
 
         #endregion
     }

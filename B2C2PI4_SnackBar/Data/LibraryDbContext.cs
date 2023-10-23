@@ -64,7 +64,11 @@ namespace SnackbarB2C2PI4_LeviFunk_MVC.Data
                 .HasForeignKey(t => t.CustomerId)
                 .IsRequired(false);
 
-            // Setting the foreign keys nullable
+            // Setting the foreign keys nullable or countable
+            modelBuilder.Entity<Order>()
+                .Property(o => o.Id)
+                .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<Order>()
                 .Property(o => o.CustomerId)
                 .IsRequired(false);
