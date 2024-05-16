@@ -1,9 +1,0 @@
-﻿using SnackbarB2C2PI4_LeviFunk_ClassLibrary;
-
-namespace SnackbarB2C2PI4_LeviFunk_MVC.Models
-{
-    public class ProductsVMIndex
-    {
-        public IList<Product> Products { get; set; }
-    }
-}
