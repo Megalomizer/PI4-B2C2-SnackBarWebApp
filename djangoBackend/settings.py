@@ -85,11 +85,11 @@ WSGI_APPLICATION = 'djangoBackend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'MVP_Team4_Levi_test',
-        'USER': 'root',
-        'PASSWORD': 'admin',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'webapp-mvpteam4-database',
+        'USER': 'rootadmin',
+        'PASSWORD': 'Admin-root',
+        'HOST': 'webapp-mvpteam4-levi-database.database.windows.net',
+        'PORT': '1433',
     }
 }
 
