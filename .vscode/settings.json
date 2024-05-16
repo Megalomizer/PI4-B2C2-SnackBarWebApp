@@ -1,4 +1,4 @@
 {
-  "appService.defaultWebAppToDeploy": "undefined/subscriptions/609635dd-987f-470f-a88e-baa510369687/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/nodewebapp-reactts-mvpteam4-deploydemo",
+  "appService.defaultWebAppToDeploy": "undefined/subscriptions/609635dd-987f-470f-a88e-baa510369687/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/djangowebapp-backend-mvpteam4-deploydemo",
   "appService.deploySubpath": "."
 }
